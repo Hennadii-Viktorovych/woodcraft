@@ -1,13 +1,15 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
-const multer = require('multer');
 const session = require('express-session');
+const multer = require('multer');
+const { createClient } = require('@libsql/client');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Явно вказуємо шлях до папки з views для Vercel
+// Налаштування views для EJS
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -21,56 +23,95 @@ app.use(session({
     saveUninitialized: false
 }));
 
-// Спроба підключення SQLite тільки якщо середовище не Vercel
-let db = null;
-if (!process.env.VERCEL) {
+// 1. Підключення до Turso (хмарний SQLite)
+const db = createClient({
+    url: process.env.TURSO_DATABASE_URL || 'file:database.db',
+    authToken: process.env.TURSO_AUTH_TOKEN
+});
+
+// Ініціалізація таблиць у Turso
+async function initDb() {
     try {
-        const sqlite3 = require('sqlite3').verbose();
-        db = new sqlite3.Database('./database.db');
-    } catch (e) {
-        console.log('SQLite local init error:', e.message);
+        await db.execute(`CREATE TABLE IF NOT EXISTS products (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            price TEXT NOT NULL,
+            image TEXT NOT NULL,
+            is_popular INTEGER DEFAULT 0
+        )`);
+
+        await db.execute(`CREATE TABLE IF NOT EXISTS requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            subject TEXT,
+            message TEXT,
+            date DATETIME DEFAULT CURRENT_TIMESTAMP
+        )`);
+    } catch (err) {
+        console.error('Помилка ініціалізації БД:', err.message);
     }
 }
+initDb();
 
-// Запасні дані для демо на Vercel
-const fallbackProducts = [
-    { id: 1, title: 'Обробна дошка Дуб', description: 'Ручна робота з дуба', price: '850', image: '/images/default.jpg', is_popular: 1 },
-    { id: 2, title: 'Тарілка з Ясеня', description: 'Екологічне покриття', price: '600', image: '/images/default.jpg', is_popular: 0 }
-];
-
-// Безпечне налаштування Multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, '/tmp'),
-    filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
+// 2. Налаштування Cloudinary (хмарні фото)
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
-const upload = multer({ storage });
+
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'woodcraft_products',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
+    }
+});
+const upload = multer({ storage: storage });
 
 function checkAuth(req, res, next) {
     if (req.session && req.session.isAdmin) return next();
     res.redirect('/admin/login');
 }
 
-/* РОУТИ */
-app.get('/', (req, res) => {
-    if (!db) {
-        return res.render('index', {
-            products: fallbackProducts,
-            popularProducts: fallbackProducts.filter(p => p.is_popular === 1)
+/* =========================================================
+   РОУТИ ГОЛОВНОГО САЙТУ
+========================================================= */
+
+app.get('/', async (req, res) => {
+    try {
+        const allProductsRes = await db.execute('SELECT * FROM products ORDER BY id DESC');
+        const popularProductsRes = await db.execute('SELECT * FROM products WHERE is_popular = 1 ORDER BY id DESC');
+
+        res.render('index', {
+            products: allProductsRes.rows || [],
+            popularProducts: popularProductsRes.rows || []
         });
+    } catch (err) {
+        console.error(err);
+        res.render('index', { products: [], popularProducts: [] });
     }
-    db.all('SELECT * FROM products ORDER BY id DESC', [], (err, allProducts) => {
-        db.all('SELECT * FROM products WHERE is_popular = 1 ORDER BY id DESC', [], (err2, popularProducts) => {
-            res.render('index', {
-                products: allProducts || [],
-                popularProducts: popularProducts || []
-            });
-        });
-    });
 });
 
-app.post('/api/request', (req, res) => {
-    res.redirect('/?success=true');
+app.post('/api/request', async (req, res) => {
+    const { name, phone, subject, message } = req.body;
+    try {
+        await db.execute({
+            sql: `INSERT INTO requests (name, phone, subject, message) VALUES (?, ?, ?, ?)`,
+            args: [name, phone, subject, message]
+        });
+        res.redirect('/?success=true');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/?error=true');
+    }
 });
+
+/* =========================================================
+   РОУТИ АДМІН-ПАНЕЛІ
+========================================================= */
 
 app.get('/admin/login', (req, res) => {
     res.render('login', { error: null });
@@ -91,27 +132,79 @@ app.get('/admin/logout', (req, res) => {
     res.redirect('/admin/login');
 });
 
-app.get('/admin', checkAuth, (req, res) => {
-    if (!db) {
-        return res.render('admin', { products: fallbackProducts, requests: [] });
-    }
-    db.all('SELECT * FROM products ORDER BY id DESC', [], (err, products) => {
-        db.all('SELECT * FROM requests ORDER BY id DESC', [], (err2, requests) => {
-            res.render('admin', { products: products || [], requests: requests || [] });
+app.get('/admin', checkAuth, async (req, res) => {
+    try {
+        const productsRes = await db.execute('SELECT * FROM products ORDER BY id DESC');
+        const requestsRes = await db.execute('SELECT * FROM requests ORDER BY id DESC');
+
+        res.render('admin', {
+            products: productsRes.rows || [],
+            requests: requestsRes.rows || []
         });
-    });
+    } catch (err) {
+        console.error(err);
+        res.render('admin', { products: [], requests: [] });
+    }
 });
 
-app.post('/admin/products/add', checkAuth, upload.single('image'), (req, res) => {
-    res.redirect('/admin');
+// Додавання товару
+app.post('/admin/products/add', checkAuth, upload.single('image'), async (req, res) => {
+    const { title, description, price, is_popular } = req.body;
+    const imagePath = req.file ? req.file.path : '/images/default.jpg';
+    const popularValue = is_popular ? 1 : 0;
+
+    try {
+        await db.execute({
+            sql: `INSERT INTO products (title, description, price, image, is_popular) VALUES (?, ?, ?, ?, ?)`,
+            args: [title, description, price, imagePath, popularValue]
+        });
+        res.redirect('/admin');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin');
+    }
 });
 
-app.post('/admin/products/delete/:id', checkAuth, (req, res) => {
-    res.redirect('/admin');
+// Перемикання статусу Популярний / Звичайний
+app.post('/admin/products/toggle-popular/:id', checkAuth, async (req, res) => {
+    try {
+        await db.execute({
+            sql: `UPDATE products SET is_popular = CASE WHEN is_popular = 1 THEN 0 ELSE 1 END WHERE id = ?`,
+            args: [req.params.id]
+        });
+        res.redirect('/admin');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin');
+    }
 });
 
-app.post('/admin/requests/delete/:id', checkAuth, (req, res) => {
-    res.redirect('/admin');
+// Видалення товару
+app.post('/admin/products/delete/:id', checkAuth, async (req, res) => {
+    try {
+        await db.execute({
+            sql: `DELETE FROM products WHERE id = ?`,
+            args: [req.params.id]
+        });
+        res.redirect('/admin');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin');
+    }
+});
+
+// Видалення заявки
+app.post('/admin/requests/delete/:id', checkAuth, async (req, res) => {
+    try {
+        await db.execute({
+            sql: `DELETE FROM requests WHERE id = ?`,
+            args: [req.params.id]
+        });
+        res.redirect('/admin');
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin');
+    }
 });
 
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
