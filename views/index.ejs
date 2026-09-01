@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WoodCraft — Крафтові сервірувальні дошки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="header">
+    <a href="/" class="header__logo-link"><img src="/images/logo.png" alt="WoodCraft Logo" class="header__logo-img"></a>
+    <nav class="header__nav">
+        <ul class="header__nav-list">
+            <li class="header__nav-item"><a href="/" class="header__nav-link">Головна</a></li>
+            <li class="header__nav-item"><a href="#catalog" class="header__nav-link">Каталог</a></li>
+            <li class="header__nav-item"><a href="#about" class="header__nav-link">Про нас</a></li>
+            <li class="header__nav-item"><a href="#contacts" class="header__nav-link">Контакти</a></li>
+        </ul>
+    </nav>
+
+    <div class="header__cart cart">
+        <button type="button" class="cart__btn" aria-label="Корзина">
+            <svg class="cart__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="cart__badge">0</span>
+        </button>
+        <span class="cart__total">0 ₴</span>
+    </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <img src="/images/4.jpg" alt="Сервірувальна дошка" class="hero__img">
+    <div class="hero__content">
+        <h1 class="hero__content-title">МИСТЕЦТВО СЕРВІРУВАННЯ З УКРАЇНСЬКОЮ ДУШЕЮ</h1>
+        <p class="hero__content-text">Крафтові сервірувальні дошки ручної роботи. Жива текстура дерева для ваших найкращих гастрономічних вечорів.</p>
+        <a href="#catalog" class="hero__content-btn btn">До каталогу</a>
+    </div>
+</section>
+
+
+<!-- POPULAR PRODUCTS SLIDER -->
+<section class="popular fade-in-section">
+    <h2 class="popular__title fade-in-section">Популярні продукти</h2>
+
+    <div class="popular__slider-wrapper">
+        <button class="popular__arrow popular__arrow--left" type="button">←</button>
+
+        <div class="popular__slider" id="popularProducts">
+            <% if (popularProducts && popularProducts.length > 0) { %>
+                <% popularProducts.forEach(product => { %>
+                    <div class="popular__slider-card">
+                        <img src="<%= product.image %>" alt="<%= product.title %>" class="popular__slider-card-img">
+                        <h3 class="popular__slader-card-title"><%= product.title %></h3>
+                        <p class="popular__slader-card-text"><%= product.price %> грн</p>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p style="text-align: center; color: #888; width: 100%; padding: 20px;">
+                    У категорії «Популярні» поки немає товарів. Відмітьте їх у адмін-панелі кнопкою «★ В популярних».
+                </p>
+            <% } %>
+        </div>
+
+        <button class="popular__arrow popular__arrow--right" type="button">→</button>
+    </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section class="about fade-in-section" id="about">
+    <h2 class="about__title">Про нас</h2>
+    <video class="about__video" autoplay muted loop playsinline>
+        <source src="/images/8.mp4" type="video/mp4">
+    </video>
+    <div class="about__content">
+        <h2 class="about__content-title">Майстерність у кожній деталі</h2>
+        <p class="about__content-text">
+            Ми створюємо унікальні дерев'яні вироби ручної роботи,
+            поєднуючи натуральні матеріали, майстерність та сучасний дизайн.
+        </p>
+    </div>
+</section>
+
+<!-- CATALOG SECTION (ДИНАМІЧНИЙ ВИВІД З БД) -->
+<section class="catalog fade-in-section" id="catalog">
+    <h2 class="catalog__title fade-in-section">Каталог товарів</h2>
+
+    <div class="catalog__grid">
+        <% if (products && products.length > 0) { %>
+            <% products.forEach(product => { %>
+                <div class="catalog__card">
+                    <div class="card__image-wrapper">
+                        <img src="<%= product.image %>" alt="<%= product.title %>" class="card__image">
+                        <div class="card__overlay">
+                            <h3 class="card__title"><%= product.title %></h3>
+                            <p class="card__description"><%= product.description || 'Ручна робота' %></p>
+                            <span class="card__price"><%= product.price %> ₴</span>
+                            <button class="btn btn--add-cart add-to-cart-btn"
+                                    data-id="<%= product.id %>"
+                                    data-title="<%= product.title %>"
+                                    data-price="<%= product.price %>"
+                                    data-image="<%= product.image %>">
+                                У кошик
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } %>
+    </div>
+</section>
+
+<!-- ADVANTAGES SECTION -->
+<section class="advantages fade-in-section">
+    <h2 class="advantages__title fade-in-section">Наші переваги</h2>
+    <div class="advantages__grid">
+        <div class="adv-card">
+            <span class="adv-card__num">01</span>
+            <h3 class="adv-card__title">Жива текстура деревини</h3>
+            <p class="adv-card__text">Використовуємо волоський горіх, вишню та дуб із природним малюнком — жодна дошка не повторює іншу.</p>
+        </div>
+        <div class="adv-card">
+            <span class="adv-card__num">02</span>
+            <h3 class="adv-card__title">Ручна робота від майстра</h3>
+            <p class="adv-card__text">Кожен виріб проходить від заготовки до фінішного оброблення через руки одного майстра.</p>
+        </div>
+        <div class="adv-card">
+            <span class="adv-card__num">03</span>
+            <h3 class="adv-card__title">Безпечне харчове покриття</h3>
+            <p class="adv-card__text">Просочуємо натуральною сумішшю лляної олії та воску. Безпечно для їжі та стійко до вологи.</p>
+        </div>
+        <div class="adv-card">
+            <span class="adv-card__num">04</span>
+            <h3 class="adv-card__title">Гравіювання на замовлення</h3>
+            <p class="adv-card__text">Додамо ім'я, дату або побажання — перетворимо дошку на подарунок, який запам'ятається назавжди.</p>
+        </div>
+        <div class="adv-card">
+            <span class="adv-card__num">05</span>
+            <h3 class="adv-card__title">Доставка по всій Україні</h3>
+            <p class="adv-card__text">Надійно пакуємо та відправляємо Новою Поштою по всій країні.</p>
+        </div>
+        <div class="adv-card">
+            <span class="adv-card__num">06</span>
+            <h3 class="adv-card__title">Довічний супровід</h3>
+            <p class="adv-card__text">Безкоштовно відновимо покриття або відшліфуємо подряпини протягом усього терміну служби.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACTS SECTION (З ФОРМОЮ В БАЗУ ДАНИХ) -->
+<section class="contacts fade-in-section" id="contacts">
+    <h2 class="contacts__title fade-in-section">Контакти</h2>
+
+    <div class="contacts__inner">
+        <div class="contacts__left">
+            <h3 class="contacts__left-heading">Маєте запитання або хочете зробити замовлення?</h3>
+            <p class="contacts__left-text">Напишіть нам — розкажемо про наявні роботи, обговоримо індивідуальне замовлення або підберемо подарунок під ваш бюджет.</p>
+
+            <ul class="contacts__list">
+                <li>
+                    <a href="tel:+380991234567" class="contacts__item">
+                        <span class="contacts__item-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.25h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.27 6.27l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </span>
+                        <span>
+                            <span class="contacts__item-label">Телефон</span>
+                            <span class="contacts__item-value">+38 (099) 123-45-67</span>
+                        </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="mailto:hello@woodcraft.ua" class="contacts__item">
+                        <span class="contacts__item-icon">
+                            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </span>
+                        <span>
+                            <span class="contacts__item-label">Пошта</span>
+                            <span class="contacts__item-value">hello@woodcraft.ua</span>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Права частина: Форма з відправкою на бекенд -->
+        <form class="contacts__form" action="/api/request" method="POST">
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="name">Ваше ім'я</label>
+                    <input type="text" id="name" name="name" required placeholder="Марія">
+                </div>
+                <div class="form-field">
+                    <label for="phone">Телефон</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="+38 (0__)">
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label for="subject">Тема</label>
+                <select id="subject" name="subject">
+                    <option value="" disabled selected>Оберіть тему</option>
+                    <option value="order">Замовити дошку</option>
+                    <option value="gift">Подарунок із гравіюванням</option>
+                    <option value="wholesale">Оптова закупівля</option>
+                    <option value="other">Інше</option>
+                </select>
+            </div>
+
+            <div class="form-field form-field--full">
+                <label for="message">Повідомлення</label>
+                <textarea id="message" name="message" placeholder="Розкажіть, яку дошку шукаєте…"></textarea>
+            </div>
+
+            <button class="contacts__btn" type="submit">Надіслати запит</button>
+        </form>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer__inner">
+        <div class="footer__top">
+            <div>
+                <p class="footer__brand-name">WoodCraft UA</p>
+                <p class="footer__brand-desc">Крафтові дерев'яні дошки ручної роботи.</p>
+            </div>
+            <div>
+                <p class="footer__col-title">Каталог</p>
+                <ul class="footer__nav">
+                    <li><a href="#catalog">Дошки для подачі</a></li>
+                    <li><a href="#catalog">Обробні дошки</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="footer__col-title">Контакти</p>
+                <ul class="footer__nav">
+                    <li><a href="tel:+380991234567">+38 (099) 123-45-67</a></li>
+                    <li><a href="mailto:hello@woodcraft.ua">hello@woodcraft.ua</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <span class="footer__copy">© 2026 WoodCraft UA. Всі права захищено.</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Модальне вікно Корзини -->
+<div class="cart-modal" id="cartModal">
+    <div class="cart-modal__overlay" id="cartOverlay"></div>
+    <div class="cart-modal__content">
+        <div class="cart-modal__header">
+            <h2>Кошик замовлень</h2>
+            <button class="cart-modal__close" id="cartClose">&times;</button>
+        </div>
+        <div class="cart-modal__body" id="cartItemsList">
+            <!-- Товари додаватимуться динамічно -->
+        </div>
+        <div class="cart-modal__footer">
+            <div class="cart-modal__total">
+                <span>Разом:</span>
+                <strong id="cartModalTotal">0 ₴</strong>
+            </div>
+            <button class="cart-modal__checkout-btn" id="cartCheckoutBtn">Оформити замовлення</button>
+        </div>
+    </div>
+</div>
+
+<script src="/index.js"></script>
+</body>
+</html>
