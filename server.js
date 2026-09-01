@@ -4,7 +4,6 @@ const session = require('express-session');
 const multer = require('multer');
 const { createClient } = require('@libsql/client');
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,12 +21,25 @@ app.use(session({
     saveUninitialized: false
 }));
 
-// 1. Безпечна ініціалізація Turso
+// 1. Налаштування Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? process.env.CLOUDINARY_CLOUD_NAME.trim() : '',
+    api_key: process.env.CLOUDINARY_API_KEY ? process.env.CLOUDINARY_API_KEY.trim() : '',
+    api_secret: process.env.CLOUDINARY_API_SECRET ? process.env.CLOUDINARY_API_SECRET.trim() : ''
+});
+
+// Використовуємо memoryStorage (найкраще для Vercel)
+const storage = multer.memoryStorage();
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // Макс 5МБ
+});
+
+// 2. Підключення до Turso
 let db = null;
 if (process.env.TURSO_DATABASE_URL) {
     try {
         let dbUrl = process.env.TURSO_DATABASE_URL.trim();
-        // Автоматичне виправлення протоколу якщо вказано https:// замість libsql://
         if (dbUrl.startsWith('https://')) {
             dbUrl = dbUrl.replace('https://', 'libsql://');
         }
@@ -37,7 +49,6 @@ if (process.env.TURSO_DATABASE_URL) {
             authToken: process.env.TURSO_AUTH_TOKEN ? process.env.TURSO_AUTH_TOKEN.trim() : undefined
         });
 
-        // Ініціалізація таблиць
         db.execute(`CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
@@ -60,37 +71,33 @@ if (process.env.TURSO_DATABASE_URL) {
     }
 }
 
-// 2. Налаштування Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
-
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: 'woodcraft_products',
-        allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
-    }
-});
-const upload = multer({ storage: storage });
-
 function checkAuth(req, res, next) {
     if (req.session && req.session.isAdmin) return next();
     res.redirect('/admin/login');
 }
 
-// Фолбек-дані якщо БД ще не відповіла
 const fallbackProducts = [
     { id: 1, title: 'Обробна дошка Дуб', description: 'Ручна робота з дуба', price: '850', image: '/images/default.jpg', is_popular: 1 }
 ];
 
+// Допоміжна функція завантаження в Cloudinary з буфера
+const uploadToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: 'woodcraft_products' },
+            (error, result) => {
+                if (result) resolve(result.secure_url);
+                else reject(error);
+            }
+        );
+        stream.end(fileBuffer);
+    });
+};
+
 /* РОУТИ */
+
 app.get('/', async (req, res) => {
-    if (!db) {
-        return res.render('index', { products: fallbackProducts, popularProducts: fallbackProducts });
-    }
+    if (!db) return res.render('index', { products: fallbackProducts, popularProducts: fallbackProducts });
     try {
         const allProductsRes = await db.execute('SELECT * FROM products ORDER BY id DESC');
         const popularProductsRes = await db.execute('SELECT * FROM products WHERE is_popular = 1 ORDER BY id DESC');
@@ -137,9 +144,7 @@ app.get('/admin/logout', (req, res) => {
 });
 
 app.get('/admin', checkAuth, async (req, res) => {
-    if (!db) {
-        return res.render('admin', { products: fallbackProducts, requests: [] });
-    }
+    if (!db) return res.render('admin', { products: fallbackProducts, requests: [] });
     try {
         const productsRes = await db.execute('SELECT * FROM products ORDER BY id DESC');
         const requestsRes = await db.execute('SELECT * FROM requests ORDER BY id DESC');
@@ -150,21 +155,32 @@ app.get('/admin', checkAuth, async (req, res) => {
     }
 });
 
+// Додавання товару з бекапом зображення
 app.post('/admin/products/add', checkAuth, upload.single('image'), async (req, res) => {
     const { title, description, price, is_popular } = req.body;
-    const imagePath = req.file ? req.file.path : '/images/default.jpg';
+    let imageUrl = '/images/default.jpg';
+
+    if (req.file && process.env.CLOUDINARY_CLOUD_NAME) {
+        try {
+            imageUrl = await uploadToCloudinary(req.file.buffer);
+        } catch (err) {
+            console.error('Cloudinary upload error:', err);
+        }
+    }
+
     const popularValue = is_popular ? 1 : 0;
 
     if (db) {
         try {
             await db.execute({
                 sql: `INSERT INTO products (title, description, price, image, is_popular) VALUES (?, ?, ?, ?, ?)`,
-                args: [title, description, price, imagePath, popularValue]
+                args: [title, description, price, imageUrl, popularValue]
             });
         } catch (err) {
-            console.error(err);
+            console.error('Turso insert error:', err);
         }
     }
+
     res.redirect('/admin');
 });
 
