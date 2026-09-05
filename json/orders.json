@@ -1,0 +1,20 @@
+[
+    {
+        "id": "ord_6a97c5b8d1d85",
+        "name": "Гена",
+        "phone": "+380938878319",
+        "subject": "order",
+        "message": "",
+        "cart": [
+            {
+                "id": "prod_6a97c59fb5aa6",
+                "name": "ппппппппппппппп",
+                "price": 40,
+                "qty": 1
+            }
+        ],
+        "total": 40,
+        "status": "new",
+        "date": "2026-09-02 06:44:08"
+    }
+]

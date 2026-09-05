@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформлення замовлення — WoodCraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Fira+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #0f0e0c;
+            --surf:    #1a1714;
+            --border:  #2a2620;
+            --gold:    #c8a96e;
+            --gold-d:  #a8894e;
+            --text:    #e8e0d4;
+            --muted:   #7a7060;
+            --danger:  #c0614a;
+            --success: #5a9e6a;
+            --r:       10px;
+            --serif:   'Cormorant Garamond', Georgia, serif;
+            --sans:    'Fira Sans', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 15px;
+            font-weight: 300;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 64px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surf);
+            position: sticky; top: 0; z-index: 10;
+        }
+        .header-logo {
+            font-family: var(--serif); font-size: 22px; font-weight: 400;
+            color: var(--gold); text-decoration: none; letter-spacing: .3px;
+        }
+        .header-back {
+            display: flex; align-items: center; gap: 6px;
+            color: var(--muted); text-decoration: none; font-size: 13px;
+            transition: color .2s;
+        }
+        .header-back:hover { color: var(--text); }
+        .header-back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+        /* ── LAYOUT ── */
+        .page {
+            max-width: 1080px; margin: 0 auto;
+            padding: 40px 24px 80px;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 28px;
+            align-items: start;
+        }
+        .page-title {
+            font-family: var(--serif); font-size: 36px; font-weight: 400;
+            margin-bottom: 28px; grid-column: 1 / -1;
+            display: flex; align-items: baseline; gap: 12px;
+        }
+        .page-title span { font-family: var(--sans); font-size: 14px; color: var(--muted); font-weight: 300; }
+
+        /* ── БЛОК ── */
+        .block {
+            background: var(--surf);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+        }
+        .block-head {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: .7px; color: var(--muted);
+        }
+
+        /* ── КОШИК ── */
+        #order-items { padding: 8px 0; }
+        .order-row {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 22px;
+            border-bottom: 1px solid rgba(255,255,255,.04);
+            transition: background .15s;
+        }
+        .order-row:last-child { border: none; }
+        .order-row:hover { background: rgba(255,255,255,.02); }
+        .order-row img {
+            width: 60px; height: 60px; object-fit: cover;
+            border-radius: 8px; flex-shrink: 0;
+            background: #252118; border: 1px solid var(--border);
+        }
+        .order-row-info { flex: 1; min-width: 0; }
+        .order-row-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+        .order-row-unit { font-size: 12px; color: var(--muted); }
+        .order-row-qty {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .qty-btn {
+            width: 28px; height: 28px; border-radius: 6px;
+            border: 1px solid var(--border); background: none;
+            color: var(--text); cursor: pointer; font-size: 18px;
+            line-height: 1; display: flex; align-items: center; justify-content: center;
+            transition: border-color .15s, color .15s;
+        }
+        .qty-btn:hover { border-color: var(--gold); color: var(--gold); }
+        .qty-num { font-size: 14px; min-width: 22px; text-align: center; }
+        .order-row-price {
+            font-family: var(--serif); font-size: 18px; font-weight: 600;
+            color: var(--gold); white-space: nowrap; min-width: 80px; text-align: right;
+        }
+        .order-row-remove {
+            background: none; border: none; cursor: pointer;
+            color: var(--muted); font-size: 18px; padding: 4px;
+            line-height: 1; transition: color .15s;
+        }
+        .order-row-remove:hover { color: var(--danger); }
+
+        /* ── ПІДСУМОК ── */
+        .summary { padding: 18px 22px; }
+        .summary-row {
+            display: flex; justify-content: space-between;
+            padding: 7px 0; font-size: 14px; color: var(--muted);
+            border-bottom: 1px solid rgba(255,255,255,.04);
+        }
+        .summary-row:last-child { border: none; }
+        .summary-total {
+            display: flex; justify-content: space-between; align-items: baseline;
+            padding: 14px 22px 18px;
+            border-top: 1px solid var(--border);
+        }
+        .summary-total-lbl { font-size: 14px; color: var(--muted); }
+        .summary-total-val { font-family: var(--serif); font-size: 28px; font-weight: 600; color: var(--gold); }
+
+        /* ── ФОРМА ── */
+        .form-wrap { padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; }
+        .fg { display: flex; flex-direction: column; gap: 6px; }
+        .fg label { font-size: 12px; color: var(--muted); }
+        .fg input, .fg textarea, .fg select {
+            padding: 11px 13px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 300;
+            outline: none;
+            transition: border-color .2s;
+            width: 100%;
+        }
+        .fg input:focus, .fg textarea:focus, .fg select:focus { border-color: var(--gold); }
+        .fg input::placeholder, .fg textarea::placeholder { color: var(--muted); }
+        .fg textarea { resize: vertical; min-height: 80px; }
+        .fg select option { background: var(--surf); }
+        .req { color: var(--gold); }
+
+        /* ── КНОПКА ── */
+        .submit-btn {
+            width: 100%; padding: 15px;
+            background: var(--gold); color: #0f0e0c;
+            border: none; border-radius: var(--r);
+            font-family: var(--sans); font-size: 15px; font-weight: 500;
+            cursor: pointer; transition: background .2s;
+            margin-top: 4px;
+        }
+        .submit-btn:hover:not(:disabled) { background: var(--gold-d); }
+        .submit-btn:disabled { opacity: .7; cursor: not-allowed; }
+
+        /* ── EMPTY STATE ── */
+        .empty-cart {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .empty-cart-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-cart h2 { font-family: var(--serif); font-size: 28px; font-weight: 400; margin-bottom: 10px; }
+        .empty-cart p  { color: var(--muted); margin-bottom: 28px; }
+        .empty-cart a  {
+            display: inline-block; padding: 12px 28px;
+            background: var(--gold); color: #0f0e0c;
+            border-radius: 8px; text-decoration: none;
+            font-weight: 500; transition: background .2s;
+        }
+        .empty-cart a:hover { background: var(--gold-d); }
+
+        /* ── SUCCESS ── */
+        .success-screen {
+            grid-column: 1 / -1;
+            text-align: center; padding: 80px 20px;
+            display: none;
+        }
+        .success-screen.show { display: block; }
+        .success-icon { font-size: 56px; margin-bottom: 20px; }
+        .success-screen h2 { font-family: var(--serif); font-size: 34px; font-weight: 400; margin-bottom: 12px; color: var(--gold); }
+        .success-screen p  { color: var(--muted); max-width: 420px; margin: 0 auto 32px; line-height: 1.7; }
+        .success-screen a  {
+            display: inline-block; padding: 12px 28px;
+            background: var(--gold); color: #0f0e0c;
+            border-radius: 8px; text-decoration: none;
+            font-weight: 500; transition: background .2s;
+        }
+
+        /* ── TOAST ── */
+        #wc-toast {
+            position: fixed; bottom: 28px; left: 50%;
+            transform: translateX(-50%) translateY(12px);
+            background: var(--surf); border: 1px solid var(--border);
+            border-radius: var(--r); padding: 12px 22px;
+            font-size: 14px; z-index: 9999; opacity: 0;
+            transition: all .3s; pointer-events: none;
+            white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.4);
+        }
+        #wc-toast.show { opacity: 1; transform: translateX(-50%); }
+        #wc-toast.err { border-color: var(--danger); color: #e07a6a; }
+        #wc-toast.ok  { border-color: var(--success); color: #8abf8e; }
+
+        @media (max-width: 780px) {
+            .page { grid-template-columns: 1fr; padding: 24px 16px 60px; }
+            .page-title { font-size: 28px; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <a href="index.html" class="header-logo">WoodCraft</a>
+    <a href="javascript:history.back()" class="header-back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Назад
+    </a>
+</header>
+
+<div class="page" id="page">
+
+    <h1 class="page-title" id="page-title">
+        Оформлення замовлення
+        <span id="items-count"></span>
+    </h1>
+
+    <!-- Порожній кошик -->
+    <div class="empty-cart" id="empty-state" style="display:none">
+        <div class="empty-cart-icon">🛒</div>
+        <h2>Кошик порожній</h2>
+        <p>Додайте товари з каталогу щоб оформити замовлення</p>
+        <a href="index.html">До каталогу</a>
+    </div>
+
+    <!-- Успішне замовлення -->
+    <div class="success-screen" id="success-screen">
+        <div class="success-icon">✅</div>
+        <h2>Замовлення прийнято!</h2>
+        <p>Дякуємо! Ми зателефонуємо вам найближчим часом для підтвердження і обговорення деталей доставки.</p>
+        <a href="index.html">Повернутись на головну</a>
+    </div>
+
+    <!-- Ліва колонка: товари -->
+    <div id="left-col">
+        <div class="block" id="cart-block">
+            <div class="block-head">Товари у замовленні</div>
+            <div id="order-items"></div>
+            <div class="summary-total">
+                <span class="summary-total-lbl">Разом</span>
+                <span class="summary-total-val" id="order-total">0 ₴</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Права колонка: форма -->
+    <div id="right-col">
+        <div class="block">
+            <div class="block-head">Ваші дані</div>
+            <div class="form-wrap">
+                <div class="fg">
+                    <label>Ім'я <span class="req">*</span></label>
+                    <input type="text" id="f-name" placeholder="Олександр">
+                </div>
+                <div class="fg">
+                    <label>Телефон <span class="req">*</span></label>
+                    <input type="tel" id="f-phone" placeholder="+38 (099) 000-00-00">
+                </div>
+                <div class="fg">
+                    <label>Місто і відділення Нової Пошти</label>
+                    <input type="text" id="f-delivery" placeholder="Київ, відділення №12">
+                </div>
+                <div class="fg">
+                    <label>Коментар до замовлення</label>
+                    <textarea id="f-comment" placeholder="Побажання щодо упаковки, гравіювання..."></textarea>
+                </div>
+                <button class="submit-btn" id="submit-btn" onclick="submitOrder()">
+                    Підтвердити замовлення
+                </button>
+            </div>
+        </div>
+
+        <!-- Коротке резюме -->
+        <div class="block" style="margin-top:14px">
+            <div class="summary" id="order-summary"></div>
+        </div>
+    </div>
+
+</div>
+
+<div id="wc-toast"></div>
+
+<script>
+    const API  = './admin/admin.php';
+    let cart   = JSON.parse(localStorage.getItem('wc_cart') || '[]');
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!cart.length) {
+            document.getElementById('empty-state').style.display = 'block';
+            document.getElementById('left-col').style.display    = 'none';
+            document.getElementById('right-col').style.display   = 'none';
+        } else {
+            renderItems();
+            renderSummary();
+        }
+    });
+
+    // ── РЕНДЕР ТОВАРІВ ────────────────────────────────────
+    function renderItems() {
+        const wrap = document.getElementById('order-items');
+        const count = cart.reduce((s,i) => s + i.qty, 0);
+        document.getElementById('items-count').textContent = count + ' ' + plural(count, 'товар','товари','товарів');
+
+        wrap.innerHTML = cart.map(i => `
+    <div class="order-row">
+      <img src="${xa(i.image||'./images/444.png')}" onerror="this.src='./images/444.png'" alt="${xa(i.name)}">
+      <div class="order-row-info">
+        <div class="order-row-name">${xe(i.name)}</div>
+        <div class="order-row-unit">${fmt(i.price)} ₴ / шт.</div>
+      </div>
+      <div class="order-row-qty">
+        <button class="qty-btn" onclick="changeQty('${i.id}',-1)">−</button>
+        <span class="qty-num">${i.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${i.id}',1)">+</button>
+      </div>
+      <div class="order-row-price">${fmt(i.price * i.qty)} ₴</div>
+      <button class="order-row-remove" onclick="removeItem('${i.id}')" title="Видалити">✕</button>
+    </div>
+  `).join('');
+
+        const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+        document.getElementById('order-total').textContent = fmt(total) + ' ₴';
+    }
+
+    function renderSummary() {
+        const total    = cart.reduce((s,i) => s + i.price * i.qty, 0);
+        const delivery = total >= 2000 ? 'Безкоштовно' : '~70–100 ₴';
+        document.getElementById('order-summary').innerHTML = `
+    <div class="summary-row"><span>Товарів</span><span>${cart.reduce((s,i)=>s+i.qty,0)} шт.</span></div>
+    <div class="summary-row"><span>Сума</span><span>${fmt(total)} ₴</span></div>
+    <div class="summary-row"><span>Доставка (Нова Пошта)</span><span>${delivery}</span></div>
+    <div class="summary-row" style="color:var(--text);font-weight:500;border:none">
+      <span>До сплати</span><span style="color:var(--gold)">${fmt(total)} ₴</span>
+    </div>
+  `;
+    }
+
+    function changeQty(id, d) {
+        const i = cart.find(x => x.id === id);
+        if (!i) return;
+        i.qty += d;
+        if (i.qty <= 0) cart = cart.filter(x => x.id !== id);
+        if (!cart.length) { location.reload(); return; }
+        saveCart();
+        renderItems();
+        renderSummary();
+    }
+
+    function removeItem(id) {
+        cart = cart.filter(x => x.id !== id);
+        if (!cart.length) { saveCart(); location.reload(); return; }
+        saveCart();
+        renderItems();
+        renderSummary();
+    }
+
+    function saveCart() { localStorage.setItem('wc_cart', JSON.stringify(cart)); }
+
+    // ── ВІДПРАВКА ─────────────────────────────────────────
+    async function submitOrder() {
+        const name     = document.getElementById('f-name').value.trim();
+        const phone    = document.getElementById('f-phone').value.trim();
+        const delivery = document.getElementById('f-delivery').value.trim();
+        const comment  = document.getElementById('f-comment').value.trim();
+
+        if (!name)  { toast('Введіть ваше ім\'я', 'err'); document.getElementById('f-name').focus();  return; }
+        if (!phone) { toast('Введіть номер телефону', 'err'); document.getElementById('f-phone').focus(); return; }
+
+        const btn = document.getElementById('submit-btn');
+        btn.disabled    = true;
+        btn.textContent = 'Надсилаємо…';
+
+        try {
+            const res  = await fetch(API + '?action=submit_order', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({
+                    name, phone,
+                    message: [delivery ? 'Доставка: ' + delivery : '', comment].filter(Boolean).join('\n'),
+                    cart,
+                }),
+            });
+            const data = await res.json();
+
+            if (data.ok) {
+                localStorage.setItem('wc_cart', '[]');
+                document.getElementById('left-col').style.display   = 'none';
+                document.getElementById('right-col').style.display  = 'none';
+                document.getElementById('page-title').style.display = 'none';
+                document.getElementById('success-screen').classList.add('show');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                throw new Error(data.error || 'Помилка сервера');
+            }
+        } catch(e) {
+            toast(e.message, 'err');
+            btn.disabled    = false;
+            btn.textContent = 'Підтвердити замовлення';
+        }
+    }
+
+    // ── UTILS ─────────────────────────────────────────────
+    function xe(s=''){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function xa(s=''){return String(s).replace(/"/g,'&quot;');}
+    function fmt(n){return Number(n||0).toLocaleString('uk-UA');}
+    function plural(n, one, few, many) {
+        const mod10=n%10, mod100=n%100;
+        if(mod10===1&&mod100!==11) return one;
+        if(mod10>=2&&mod10<=4&&(mod100<10||mod100>=20)) return few;
+        return many;
+    }
+
+    function toast(msg, type='ok') {
+        const t = document.getElementById('wc-toast');
+        t.textContent = msg;
+        t.className   = type==='err' ? 'show err' : 'show ok';
+        clearTimeout(t._t);
+        t._t = setTimeout(()=>t.className='', 4000);
+    }
+</script>
+</body>
+</html>

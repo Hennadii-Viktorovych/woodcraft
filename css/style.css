@@ -1,0 +1,501 @@
+
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto;
+    font-family: "Playfair Display", serif;
+    font-family: "Lora", serif;
+    overflow-x: hidden;
+}
+
+
+.header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25rem;
+    padding: 4rem  10rem 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    color: #fff;
+}
+
+.header__nav-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+
+    font-weight: 600;
+    font-size: clamp(1.7rem, 2.5vw, 1.5rem);
+    font-family: "Lora", serif;
+
+
+    & a {
+        position: relative;
+        color: #fff;
+        padding-bottom: 0.7rem;
+        transition: color 0.4s ease, transform 0.4s ease;
+
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background-color: #e9bd8c;
+            transition: width 0.4s ease, left 0.4s ease;
+        }
+
+        &:hover {
+            color: #e9bd8c;
+
+            &::after {
+                width: 100%;
+                left: 0;
+            }
+        }
+    }
+}
+
+.cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    position: relative;
+    font-family: "Fira Sans", sans-serif;
+}
+
+.cart__btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.08);
+
+        .cart__icon {
+            stroke: #e9bd8c;
+        }
+    }
+}
+
+.cart__icon {
+    width: 28px;
+    height: 28px;
+    transition: stroke 0.3s ease;
+}
+
+.cart__badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #e9bd8c;
+    color: #1a1a1a;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.cart__total {
+    font-weight: 600;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.hero {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Відео */
+.hero__video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    filter: brightness(0.7);
+
+    z-index: 0;
+}
+
+/* Контейнер композиції */
+.hero__container {
+    position: relative;
+    width: min(1440px, calc(80% - 80px));
+    height: 100%;
+}
+/* Контент */
+.hero__content {
+    position: absolute;
+    left: 15rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: min(400px, 100vw);
+}
+
+.hero__content-title{
+    font-weight: 400;
+    line-height: 1.2;
+    font-size: 4vw;
+    color: #fff;
+}
+
+.hero__content-text {
+    padding: 2.4rem 0 2.4rem 0;
+    font-family: "Fira Sans", sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    line-height: 1.6;
+    font-weight: 600;
+    color:  #fff;
+}
+
+.hero__content-btn {
+    width: 100%;
+    max-width: 16rem;
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #e9bd8c;
+    color: #fff;
+    font-weight: 600;
+    font-size: 24px;
+    transition: background-color  0.4s ease;
+
+    &:hover {
+        background-color: #e9bd8c;
+        color: #000;
+    }
+}
+
+
+/* ══════════════════════════════════════
+СЕКЦІЯ ПЕРЕВАГИ
+══════════════════════════════════════ */
+
+.advantages {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: column;
+    padding:  0 20rem;
+}
+
+.advantages__title {
+    padding: 7rem 0;
+    font-weight: 400;
+    font-size: 5vw;
+}
+
+.advantages__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem ;
+    background-color: #e8e0d14;
+}
+
+.adv-card {
+    padding: 3rem;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    transition: background-color 0.4s ease-in;
+    cursor: default;
+}
+
+.adv-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 44px;
+    right: 44px;
+    height: 2px;
+    background: #e9bd8c;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s ease;
+}
+
+.adv-card:hover {
+    background-color: #e9bd8c;
+}
+
+.adv-card:hover::after {
+    transform: scaleX(1);
+}
+
+.adv-card__num {
+    display: block;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 64px;
+    font-weight: 300;
+    color: #e8e0d6;
+    line-height: 1;
+    margin-bottom: 20px;
+}
+
+.adv-card__title {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 2.2rem;
+    font-weight: 500;
+    color: #1a1208;
+    line-height: 1.25;
+}
+
+.adv-card__text {
+    font-family: "Fira Sans", sans-serif;
+    font-size: 1.3rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: #7a6a58;
+    padding: 1rem 0 1rem 0;
+}
+
+/* ══════════════════════════════════════
+ФУТЕР
+══════════════════════════════════════ */
+
+.footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20rem 20rem;
+    position: relative;    /* Критично важливо для правильного абсолютного позиціонування всередині */
+    overflow: visible;     /* Дозволяє ефекту виходити трохи вище футера */
+}
+
+.footer__img {
+    width: 100%;
+    height: 100%;          /* Картинка займає всю висоту футера */
+    object-fit: cover;     /* Картинка не деформується, а покриває блок */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* Новий блок, який створює ефект матового скла та плавного зникнення по скролу */
+.footer__blur-overlay {
+    position: absolute;
+    top: -120px;          /* Виносимо зону розмиття вгору над футером, де скролиться контент */
+    left: 0;
+    width: 100%;
+    height: calc(100% + 120px); /* Покриває весь футер + верхній виліт */
+    z-index: 1;           /* Знаходиться НАД картинкою, але ПІД текстом */
+    pointer-events: none; /* Щоб блок не заважав виділяти текст чи клікати на посилання */
+
+    /* Вмикаємо розмиття всього, що знаходиться ЗА цим блоком під час скролу */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(6px);
+
+    /* Градієнтна маска робить ефект плавним: зверху повна прозорість, донизу — розмиття */
+    mask-image: linear-gradient(to bottom, transparent 0%, black 120px);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 120px);
+
+    /* Темне тонування, щоб текст WoodCraft UA краще зчитувався */
+    background: linear-gradient(to bottom, transparent, rgba(20, 20, 20, 0.4) 120px);
+}
+
+.footer__inner {
+    width: 100%;          /* Додано для правильного розтягування сітки */
+    max-width: 100rem;
+    position: relative;
+    z-index: 2;           /* Піднімаємо текст вище шару розмиття, щоб він не розмивався */
+    padding: 0 2rem;      /* Безпечні відступи для мобільних екранів */
+}
+
+.footer__top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 4rem;
+    padding-bottom: 5rem;
+    border-bottom: 1px solid rgba(233,189,140,0.12);
+    margin-bottom: 3rem;
+}
+
+.footer__brand-name {
+    font-family: "Lora", serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: #fff;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.footer__brand-desc {
+    font-family: "Lora", serif;
+    font-weight: 300;
+    line-height: 1.85;
+    color: rgba(255,255,255,0.45);
+    max-width: 260px;
+    margin-bottom: 3rem;
+}
+
+.footer__social {
+    display: flex;
+    gap: 1rem;
+}
+
+.footer__social-link {
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(233,189,140,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.55);
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.footer__social-link:hover {
+    border-color: #e9bd8c;
+    color: #e9bd8c;
+}
+
+.footer__social-link svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.footer__col-title {
+    font-family: "Playfair Display", serif;
+    font-size: 1vw;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #e9bd8c;
+    margin-bottom: 2rem;
+}
+
+.footer__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.footer__nav a {
+    font-family: "Lora", serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    color: rgba(255,255,255,0.5);
+    position: relative;
+    padding-bottom: 2px;
+    transition: color 0.3s ease;
+
+}
+
+.footer__nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #e9bd8c;
+    transition: width 0.3s ease;
+}
+
+.footer__nav a:hover {
+    color: #fff;
+}
+
+.footer__nav a:hover::after {
+    width: 100%;
+}
+
+.footer__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer__copy {
+    font-family: "Lora", serif;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    color: rgba(255,255,255,0.25);
+}
+
+.footer__tagline {
+    font-family: "Lora", serif;
+    font-style: italic;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    color: rgba(233,189,140,0.4);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .advantages__grid { grid-template-columns: repeat(2, 1fr); }
+    .footer__top { grid-template-columns: 1fr 1fr; gap: 36px; }
+}
+
+@media (max-width: 768px) {
+    .advantages__title,
+    .contacts__title { font-size: 48px; }
+
+    .advantages { padding: 0 1.5rem 6rem; }
+    .contacts { padding: 0 1.5rem 6rem; }
+    .footer { padding: 52px 1.5rem 24px; }
+
+    .advantages__grid { grid-template-columns: 1fr; }
+    .contacts__inner { grid-template-columns: 1fr; gap: 52px; }
+    .footer__top { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .footer__bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+
+@media (max-width: 900px) {
+    .catalog__grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    .catalog__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog__tabs {
+        justify-content: flex-start;
+        gap: 20px;
+        padding-bottom: 5px;
+    }
+}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товар — WoodCraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Fira+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/reset.css">
+    <link rel="stylesheet" href="./css/product.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+
+    <a href="index.html" class="header__logo-link"><img src="" alt="logo" class="header__logo-img">
+        wood_craft_max
+    </a>
+    <nav class="header__nav">
+        <ul class="header__nav-list">
+            <li class="header__nav-item"><a href="index.html" class="header__nav-link">Головна</a></li>
+            <li class="header__nav-item"><a href="catalog.html" class="header__nav-link">Каталог</a></li>
+            <li class="header__nav-item"><a href="about.html" class="header__nav-item">Про нас</a></li>
+            <li class="header__nav-item"><a href="contacts.html" class="header__nav-link">Контакти</a></li>
+        </ul>
+    </nav>
+
+    <div class="header__cart cart">
+        <button type="button" class="cart__btn" aria-label="Корзина">
+
+            <svg class="cart__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+
+            <span class="cart__badge">3</span>
+        </button>
+
+        <span class="cart__total">1 250 ₴</span>
+    </div>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+    <a href="index.html">Головна</a>
+    &rsaquo;
+    <a href="index.html">Каталог</a>
+    &rsaquo;
+    <span id="bc-name">…</span>
+</div>
+
+<!-- LOADING -->
+<div class="loading" id="loading">
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+</div>
+
+<!-- PRODUCT -->
+<div class="product-wrap" id="product-wrap" style="display:none">
+
+    <div class="gallery">
+        <div class="gallery-main">
+            <img id="main-img" src="" alt="">
+        </div>
+        <div class="gallery-thumbs" id="thumbs"></div>
+    </div>
+
+    <div class="product-info">
+        <div class="p-category" id="p-cat"></div>
+        <h1 class="p-name" id="p-name"></h1>
+        <p class="p-short" id="p-short"></p>
+
+        <div class="price-row">
+            <span class="price-main" id="p-price"></span>
+            <span class="price-old"  id="p-old"></span>
+            <span class="price-sale" id="p-sale" style="display:none">Знижка</span>
+        </div>
+
+        <div class="features" id="p-feats"></div>
+
+        <div class="btn-row">
+            <button class="btn-gold" onclick="addToCartCurrent()">+ До кошика</button>
+            <button class="btn-outline" onclick="buyNow()">Замовити зараз</button>
+        </div>
+
+        <div class="specs-title">Характеристики</div>
+        <div class="specs" id="p-specs"></div>
+
+        <div class="desc-title">Про товар</div>
+        <div class="desc-text" id="p-desc"></div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- RELATED -->
+<div class="related" id="related" style="display:none">
+    <div class="related-title">Також може сподобатись</div>
+    <div class="related-grid" id="related-grid"></div>
+</div>
+
+<!-- CART DRAWER -->
+<div id="wc-cart-drawer">
+    <div id="wc-overlay" onclick="closeCart()"></div>
+    <div id="wc-panel">
+        <div class="drawer-head">
+            <span>Кошик</span>
+            <button class="drawer-close" onclick="closeCart()">✕</button>
+        </div>
+        <div class="drawer-list" id="wc-cart-list"></div>
+        <div class="drawer-foot">
+            <div class="drawer-total" id="wc-cart-total"></div>
+            <button class="drawer-btn" onclick="goToOrder()">Оформити замовлення →</button>
+        </div>
+    </div>
+</div>
+
+<div id="wc-toast"></div>
+
+<footer class="footer">
+
+    <img src="./images/3.jpg" alt="" class="footer__img">
+
+    <div class="footer__blur-overlay"></div>
+
+    <div class="footer__inner">
+
+        <div class="footer__top">
+
+            <div>
+                <p class="footer__brand-name">
+                    wood_craft_max
+                </p>
+                <p class="footer__brand-desc">Крафтові дерев'яні дошки ручної роботи. Виготовляємо з любов'ю до матеріалу та з повагою до вашого столу.</p>
+                <div class="footer__social">
+                    <a href="#" class="footer__social-link" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" class="footer__social-link" aria-label="Facebook">
+                        <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                    </a>
+                    <a href="#" class="footer__social-link" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <p class="footer__col-title">Каталог</p>
+                <ul class="footer__nav">
+                    <li><a href="#">Дошки для подачі</a></li>
+                    <li><a href="#">Обробні дошки</a></li>
+                    <li><a href="#">Підставки та підноси</a></li>
+                    <li><a href="#">Набори</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="footer__col-title">Інформація</p>
+                <ul class="footer__nav">
+                    <li><a href="#">Про нас</a></li>
+                    <li><a href="#">Догляд за дошкою</a></li>
+                    <li><a href="#">Умови замовлення</a></li>
+                    <li><a href="#">Доставка і оплата</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <p class="footer__col-title">Контакти</p>
+                <ul class="footer__nav">
+                    <li><a href="tel:+380991234567">+38 (099) 123-45-67</a></li>
+                    <li><a href="mailto:hello@woodcraft.ua">hello@woodcraft.ua</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Telegram</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="footer__bottom">
+            <span class="footer__copy">© 2024
+wood_craft_max
+ . Всі права захищено.</span>
+            <span class="footer__tagline">Зроблено з деревом і душею</span>
+        </div>
+
+    </div>
+</footer>
+
+<script src="./js/product.js"></script>
+</body>
+</html>
