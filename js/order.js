@@ -126,7 +126,9 @@ async function submitOrder() {
             document.getElementById('left-col').style.display    = 'none';
             document.getElementById('right-col').style.display   = 'none';
             document.getElementById('page-title').style.display  = 'none';
-            document.getElementById('success-screen').classList.add('show');
+            const s = document.getElementById('success-screen');
+            s.classList.add('show');
+            s.style.display = 'block';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
             throw new Error(data.error || 'Помилка сервера');

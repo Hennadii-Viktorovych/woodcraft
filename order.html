@@ -5,184 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Оформлення замовлення — WoodCraft</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Fira+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Fira+Sans:wght@300;400;500;600&family=Lora:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/reset.css">
     <link rel="stylesheet" href="./css/order.css">
 </head>
 <body>
 
-<header class="header">
-
-    <a href="index.html" class="header__logo-link"><img src="" alt="logo" class="header__logo-img">
-        wood_craft_max
-    </a>
-    <nav class="header__nav">
-        <ul class="header__nav-list">
-            <li class="header__nav-item"><a href="index.html" class="header__nav-link">Головна</a></li>
-            <li class="header__nav-item"><a href="catalog.html" class="header__nav-link">Каталог</a></li>
-            <li class="header__nav-item"><a href="about.html" class="header__nav-link">Про нас</a></li>
-            <li class="header__nav-item"><a href="contacts.html" class="header__nav-link">Контакти</a></li>
-        </ul>
+<!-- ХЕДЕР -->
+<header class="o-header">
+    <a href="index.html" class="o-header__logo">wood_craft_max</a>
+    <nav class="o-header__nav">
+        <a href="index.html">Головна</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="about.html">Про нас</a>
+        <a href="conatacts.html">Контакти</a>
     </nav>
-
-    <div class="header__cart cart">
-        <button type="button" class="cart__btn" aria-label="Корзина">
-
-            <svg class="cart__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-
-            <span class="cart__badge">3</span>
-        </button>
-
-        <span class="cart__total">1 250 ₴</span>
-    </div>
+    <button class="o-header__cart" onclick="cartToggle()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span id="o-cart-count"></span>
+        <span id="o-cart-total"></span>
+    </button>
 </header>
 
-<div class="page" id="page">
+<!-- ХЛІБНІ КРИХТИ -->
+<nav class="o-breadcrumb">
+    <a href="index.html">Головна</a>
+    <span>›</span>
+    <span>Оформлення замовлення</span>
+</nav>
 
-    <h1 class="page-title" id="page-title">
+<!-- ОСНОВНИЙ КОНТЕНТ -->
+<main class="o-main" id="page">
+
+    <h1 class="o-title" id="page-title">
         Оформлення замовлення
         <span id="items-count"></span>
     </h1>
 
     <!-- Порожній кошик -->
-    <div class="empty-cart" id="empty-state" style="display:none">
-        <div class="empty-cart-icon">🛒</div>
+    <div class="o-empty" id="empty-state" style="display:none">
+        <div class="o-empty__icon">🛒</div>
         <h2>Кошик порожній</h2>
         <p>Додайте товари з каталогу щоб оформити замовлення</p>
         <a href="index.html">До каталогу</a>
     </div>
 
-    <!-- Успішне замовлення -->
-    <div class="success-screen" id="success-screen">
-        <div class="success-icon">✅</div>
+    <!-- Успіх -->
+    <div class="o-success" id="success-screen">
+        <div class="o-success__icon">✅</div>
         <h2>Замовлення прийнято!</h2>
         <p>Дякуємо! Ми зателефонуємо вам найближчим часом для підтвердження і обговорення деталей доставки.</p>
         <a href="index.html">Повернутись на головну</a>
     </div>
 
     <!-- Ліва колонка: товари -->
-    <div id="left-col">
-        <div class="block" id="cart-block">
-            <div class="block-head">Товари у замовленні</div>
+    <div class="o-left" id="left-col">
+        <div class="o-card">
+            <div class="o-card__head">Товари у замовленні</div>
             <div id="order-items"></div>
-            <div class="summary-total">
-                <span class="summary-total-lbl">Разом</span>
-                <span class="summary-total-val" id="order-total">0 ₴</span>
+            <div class="o-card__total">
+                <span>Разом</span>
+                <span id="order-total">0 ₴</span>
             </div>
         </div>
     </div>
 
-    <div id="right-col">
-        <div class="block">
-            <div class="block-head">Ваш дані</div>
-            <div class="form-wrap">
-                <div class="fg">
-                    <label>Ім'я <span class="req">*</span></label>
+    <!-- Права колонка: форма -->
+    <div class="o-right" id="right-col">
+
+        <div class="o-card">
+            <div class="o-card__head">Ваші дані</div>
+            <div class="o-form">
+                <div class="o-field">
+                    <label>Ім'я <span>*</span></label>
                     <input type="text" id="f-name" placeholder="Олександр">
                 </div>
-                <div class="fg">
-                    <label>Телефон <span class="req">*</span></label>
+                <div class="o-field">
+                    <label>Телефон <span>*</span></label>
                     <input type="tel" id="f-phone" placeholder="+38 (099) 000-00-00">
                 </div>
-                <div class="fg">
+                <div class="o-field">
                     <label>Місто і відділення Нової Пошти</label>
                     <input type="text" id="f-delivery" placeholder="Київ, відділення №12">
                 </div>
-                <div class="fg">
-                    <label>Коментар до замовлення</label>
+                <div class="o-field">
+                    <label>Коментар</label>
                     <textarea id="f-comment" placeholder="Побажання щодо упаковки, гравіювання..."></textarea>
                 </div>
-                <button class="submit-btn" id="submit-btn" onclick="submitOrder()">
-                    Підтвердити замовлення
-                </button>
+                <button id="submit-btn" onclick="submitOrder()">Підтвердити замовлення</button>
             </div>
         </div>
 
-        <!-- Коротке резюме -->
-        <div class="block" style="margin-top:14px">
-            <div class="summary" id="order-summary"></div>
-        </div>
-    </div>
-
-</div>
-
-<div id="wc-toast"></div>
-
-<footer class="footer">
-
-    <img src="./images/3.jpg" alt="" class="footer__img">
-
-    <div class="footer__blur-overlay"></div>
-
-    <div class="footer__inner">
-
-        <div class="footer__top">
-
-            <div>
-                <p class="footer__brand-name">
-                    wood_craft_max
-                </p>
-                <p class="footer__brand-desc">Крафтові дерев'яні дошки ручної роботи. Виготовляємо з любов'ю до матеріалу та з повагою до вашого столу.</p>
-                <div class="footer__social">
-                    <a href="#" class="footer__social-link" aria-label="Instagram">
-                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                    </a>
-                    <a href="#" class="footer__social-link" aria-label="Facebook">
-                        <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                    </a>
-                    <a href="#" class="footer__social-link" aria-label="Telegram">
-                        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                    </a>
-                </div>
-            </div>
-
-            <div>
-                <p class="footer__col-title">Каталог</p>
-                <ul class="footer__nav">
-                    <li><a href="#">Дошки для подачі</a></li>
-                    <li><a href="#">Обробні дошки</a></li>
-                    <li><a href="#">Підставки та підноси</a></li>
-                    <li><a href="#">Набори</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <p class="footer__col-title">Інформація</p>
-                <ul class="footer__nav">
-                    <li><a href="#">Про нас</a></li>
-                    <li><a href="#">Догляд за дошкою</a></li>
-                    <li><a href="#">Умови замовлення</a></li>
-                    <li><a href="#">Доставка і оплата</a></li>
-                </ul>
-            </div>
-
-            <div>
-                <p class="footer__col-title">Контакти</p>
-                <ul class="footer__nav">
-                    <li><a href="tel:+380991234567">+38 (099) 123-45-67</a></li>
-                    <li><a href="mailto:hello@woodcraft.ua">hello@woodcraft.ua</a></li>
-                    <li><a href="#">Instagram</a></li>
-                    <li><a href="#">Telegram</a></li>
-                </ul>
-            </div>
-
-        </div>
-
-        <div class="footer__bottom">
-            <span class="footer__copy">© 2024
-wood_craft_max
- . Всі права захищено.</span>
-            <span class="footer__tagline">Зроблено з деревом і душею</span>
+        <div class="o-card o-card--summary">
+            <div id="order-summary"></div>
         </div>
 
     </div>
-</footer>
+
+</main>
 
 <script src="./js/cart.js"></script>
 <script src="./js/order.js"></script>
+<script>
+    // Оновлюємо хедер кошика для цієї сторінки
+    const _origUpdate = cartUpdateUI;
+    function cartUpdateUI() {
+        _origUpdate();
+        const count = cartCount();
+        const total = cartTotal();
+        const cnt = document.getElementById('o-cart-count');
+        const tot = document.getElementById('o-cart-total');
+        if (cnt) cnt.textContent = count ? count : '';
+        if (tot) tot.textContent = count ? fmtNum(total) + ' ₴' : '';
+    }
+</script>
 </body>
 </html>
