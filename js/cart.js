@@ -67,13 +67,13 @@ function cartUpdateUI() {
     const count = cartCount();
     const total = cartTotal();
 
-    // Варіант 1: хедер сайту (.cart__badge / .cart__total)
+    // Хедер index.html / catalog.html
     const badge1 = document.querySelector('.cart__badge');
     const total1 = document.querySelector('.cart__total');
     if (badge1) badge1.textContent = count || '';
     if (total1) total1.textContent = count ? fmtNum(total) + ' ₴' : '';
 
-    // Варіант 2: хедер product.html (#cart-badge / #cart-lbl)
+    // Хедер product.html
     const badge2 = document.getElementById('cart-badge');
     const lbl2   = document.getElementById('cart-lbl');
     if (badge2) {
@@ -81,6 +81,12 @@ function cartUpdateUI() {
         badge2.className   = count ? 'cart-badge-num show' : 'cart-badge-num';
     }
     if (lbl2) lbl2.textContent = count ? fmtNum(total) + ' ₴' : 'Кошик';
+
+    // Хедер order.html
+    const cnt3 = document.getElementById('o-cart-count');
+    const tot3 = document.getElementById('o-cart-total');
+    if (cnt3) cnt3.textContent = count || '';
+    if (tot3) tot3.textContent = count ? fmtNum(total) + ' ₴' : '';
 }
 
 // ── DRAWER ────────────────────────────────────────────

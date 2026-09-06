@@ -110,18 +110,5 @@
 
 <script src="./js/cart.js"></script>
 <script src="./js/order.js"></script>
-<script>
-    // Оновлюємо хедер кошика для цієї сторінки
-    const _origUpdate = cartUpdateUI;
-    function cartUpdateUI() {
-        _origUpdate();
-        const count = cartCount();
-        const total = cartTotal();
-        const cnt = document.getElementById('o-cart-count');
-        const tot = document.getElementById('o-cart-total');
-        if (cnt) cnt.textContent = count ? count : '';
-        if (tot) tot.textContent = count ? fmtNum(total) + ' ₴' : '';
-    }
-</script>
 </body>
 </html>
